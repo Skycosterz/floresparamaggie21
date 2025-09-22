@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Flores amarillas — HTML + CSS</title>
+  <style>
+    :root{
+      --sky-1:#e6f3ff; 
+      --sky-2:#cde9ff;
+      --ground:#7ac36a;
+      --petal:#ffd21f; /* amarillo principal */
+      --petal-2:#ffec8a; /* luz */
+      --center:#8c5a18;
+      --center-2:#c48c3a;
+      --stem:#2f8a3b;
+      --leaf:#3fae4c;
+      --shadow: 0 6px 20px rgba(0,0,0,.15);
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0}
+    body{
+      display:grid;place-items:end center; 
+      background:linear-gradient(180deg,var(--sky-1),var(--sky-2) 60%, var(--ground) 60%);
+      font-family:ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial;
+      overflow:hidden;
+    }
+
+    .field{
+      position:relative; 
+      width:min(1200px,100%); 
+      aspect-ratio: 16/9; 
+      max-height:90vh;
+      filter: drop-shadow(0 10px 30px rgba(0,0,0,.2));
+    }
+
+    /* Sol */
+    .sun{
+      position:absolute; 
+      top:6%; right:7%; 
+      width:120px; aspect-ratio:1; border-radius:50%;
+      background: radial-gradient(circle at 30% 30%, #fff7c9, #ffd44a 55%, #ffcd1a 60%, transparent 62%);
+      box-shadow:0 0 100px 30px rgba(255,221,67,.45);
+      animation: pulse 5s ease-in-out infinite;
+    }
+    @keyframes pulse{50%{transform:scale(1.06)}}
+
+    /* Contenedor de flores */
+    .flowers{position:absolute; inset:0; display:block}
+
+    /* Una flor */
+    .flower{
+      --x:50%;            /* posición horizontal */
+      --h: 36vh;          /* altura aproximada */
+      --s: 1;             /* escala */
+      position:absolute; bottom:0; left:var(--x);
+      transform: translateX(-50%) scale(var(--s));
+      transform-origin: bottom center;
+      animation: sway 6s ease-in-out infinite;
+      will-change: transform;
+    }
+    @keyframes sway{ 
+      0%,100%{ transform: translateX(-50%) scale(var(--s)) rotate(-2deg);} 
+      50%{     transform: translateX(-50%) scale(var(--s)) rotate(2deg);} 
+    }
+
+    .stem{
+      width:8px; height:var(--h);
+      background: linear-gradient(180deg, #2f8a3b, #206b2b);
+      border-radius: 10px; margin:0 auto; position:relative;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.12);
+    }
+
+    /* Hojas */
+    .leaf{
+      position:absolute; width:140px; height:70px; 
+      background: radial-gradient(120px 60px at 30% 50%, var(--leaf), #2f8a3b 70%);
+      border-radius: 0 70px 70px 70px; 
+      top: calc(var(--h) * .45);
+      transform-origin: left center;
+      box-shadow: var(--shadow);
+      filter:saturate(1.1);
+    }
+    .leaf.left{left:-20px; transform: rotate(-22deg) scaleX(.9);}
+    .leaf.right{right:-20px; transform: scaleX(-1) rotate(-18deg);}
+
+    /* Flor (corola) */
+    .bloom{
+      position:absolute; left:50%; top:-38px; transform: translate(-50%,-100%);
+      width:180px; height:180px;
+      display:grid; place-items:center;
+      filter:saturate(1.1);
+    }
+    .petals{ position:relative; width:100%; height:100%; }
+
+    /* 8 pétalos posicionados en círculo usando --i */
+    .petal{
+      --i:0; position:absolute; left:50%; top:50%;
+      width:90px; height:130px;
+      transform: translate(-50%, -100%) rotate(calc(var(--i) * 45deg));
+      transform-origin: 50% 100%;
+    }
+    .petal::before{
+      content:""; display:block; width:100%; height:100%;
+      background:
+        radial-gradient(60% 60% at 50% 35%, var(--petal-2), transparent 60%),
+        radial-gradient(100% 100% at 50% 20%, #fff6, transparent 55%),
+        radial-gradient(90% 100% at 50% 100%, #d19a00, #a87a00 65%, transparent 66%),
+        radial-gradient(100% 100% at 50% 30%, var(--petal), #f7c000 70%);
+      clip-path: polygon(50% 0%, 64% 8%, 78% 24%, 84% 45%, 75% 70%, 50% 100%, 25% 70%, 16% 45%, 22% 24%, 36% 8%);
+      border-radius: 60% 60% 70% 70% / 70% 70% 100% 100%;
+      box-shadow: inset 0 -10px 20px rgba(0,0,0,.12);
+    }
+
+    /* Centro de la flor */
+    .center{
+      position:absolute; inset:0; margin:auto; width:84px; height:84px; border-radius:50%;
+      background:radial-gradient(circle at 40% 35%, var(--center-2), var(--center) 70%);
+      box-shadow: inset 0 6px 18px rgba(0,0,0,.25), 0 4px 10px rgba(0,0,0,.25);
+    }
+    .center::after{
+      content:""; position:absolute; inset:0; margin:auto; width:68px; height:68px; border-radius:50%;
+      background: radial-gradient(circle at 60% 60%, #7b4d13 0 35%, #5c370d 36% 100%);
+      opacity:.28; filter: blur(1px);
+    }
+
+    /* Césped frontal para profundidad */
+    .grass{
+      position:absolute; inset:auto 0 0 0; height:18vh; pointer-events:none;
+      background:
+        repeating-linear-gradient(90deg, #4fa85b 0 8px, #3f9b4d 8px 16px),
+        radial-gradient(120% 70% at 50% 100%, #4a9e55 0 55%, transparent 56%);
+      clip-path: polygon(0 40%, 10% 55%, 22% 45%, 34% 70%, 46% 50%, 58% 75%, 70% 55%, 82% 72%, 92% 60%, 100% 70%, 100% 100%, 0 100%);
+      filter: drop-shadow(0 -8px 20px rgba(0,0,0,.2));
+    }
+
+    /* Accesibilidad: reducir animación si el usuario lo pide */
+    @media (prefers-reduced-motion: reduce){
+      .flower{animation:none}
+      .sun{animation:none}
+    }
+
+    /* Indicaciones en pantalla */
+    .note{
+      position:absolute; left:1.2rem; top:1rem; 
+      padding:.6rem .9rem; background:rgba(255,255,255,.6);
+      border-radius:12px; backdrop-filter: blur(6px);
+      font-size:14px; color:#19431b; box-shadow:var(--shadow);
+    }
+  </style>
+</head>
+<body>
+  <div class="field" role="img" aria-label="Ilustración de un prado con flores amarillas animadas, hechas solo con HTML y CSS.">
+    <div class="sun" aria-hidden="true"></div>
+    <div class="flowers">
+      <!-- Flor 1 -->
+      <div class="flower" style="--x:16%; --h: 38vh; --s:.9; animation-delay:.2s">
+        <div class="stem">
+          <div class="leaf left"></div>
+          <div class="leaf right" style="top: calc(var(--h) * .65)"></div>
+        </div>
+        <div class="bloom">
+          <div class="petals">
+            <div class="petal" style="--i:0"></div>
+            <div class="petal" style="--i:1"></div>
+            <div class="petal" style="--i:2"></div>
+            <div class="petal" style="--i:3"></div>
+            <div class="petal" style="--i:4"></div>
+            <div class="petal" style="--i:5"></div>
+            <div class="petal" style="--i:6"></div>
+            <div class="petal" style="--i:7"></div>
+          </div>
+          <div class="center" aria-hidden="true"></div>
+        </div>
+      </div>
+
+      <!-- Flor 2 -->
+      <div class="flower" style="--x:40%; --h: 44vh; --s:1; animation-delay:.8s">
+        <div class="stem">
+          <div class="leaf left" style="top: calc(var(--h) * .55)"></div>
+          <div class="leaf right" style="top: calc(var(--h) * .35)"></div>
+        </div>
+        <div class="bloom">
+          <div class="petals">
+            <div class="petal" style="--i:0"></div>
+            <div class="petal" style="--i:1"></div>
+            <div class="petal" style="--i:2"></div>
+            <div class="petal" style="--i:3"></div>
+            <div class="petal" style="--i:4"></div>
+            <div class="petal" style="--i:5"></div>
+            <div class="petal" style="--i:6"></div>
+            <div class="petal" style="--i:7"></div>
+          </div>
+          <div class="center" aria-hidden="true"></div>
+        </div>
+      </div>
+
+      <!-- Flor 3 (pequeña) -->
+      <div class="flower" style="--x:68%; --h: 30vh; --s:.78; animation-delay:1.2s">
+        <div class="stem">
+          <div class="leaf left" style="top: calc(var(--h) * .5)"></div>
+        </div>
+        <div class="bloom">
+          <div class="petals">
+            <div class="petal" style="--i:0"></div>
+            <div class="petal" style="--i:1"></div>
+            <div class="petal" style="--i:2"></div>
+            <div class="petal" style="--i:3"></div>
+            <div class="petal" style="--i:4"></div>
+            <div class="petal" style="--i:5"></div>
+            <div class="petal" style="--i:6"></div>
+            <div class="petal" style="--i:7"></div>
+          </div>
+          <div class="center" aria-hidden="true"></div>
+        </div>
+      </div>
+
+      <!-- Flor 4 -->
+      <div class="flower" style="--x:86%; --h: 36vh; --s:.92; animation-delay:1.6s">
+        <div class="stem">
+          <div class="leaf right" style="top: calc(var(--h) * .58)"></div>
+        </div>
+        <div class="bloom">
+          <div class="petals">
+            <div class="petal" style="--i:0"></div>
+            <div class="petal" style="--i:1"></div>
+            <div class="petal" style="--i:2"></div>
+            <div class="petal" style="--i:3"></div>
+            <div class="petal" style="--i:4"></div>
+            <div class="petal" style="--i:5"></div>
+            <div class="petal" style="--i:6"></div>
+            <div class="petal" style="--i:7"></div>
+          </div>
+          <div class="center" aria-hidden="true"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grass" aria-hidden="true"></div>
+    <div class="note">Tip: duplica un bloque <code>.flower</code> y cambia <code>--x</code>, <code>--h</code> y <code>--s</code> para crear más flores 💛</div>
+  </div>
+</body>
+</html>
